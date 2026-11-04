@@ -12,9 +12,12 @@ export interface CommentItem {
 export interface NewsItem {
   id: number;
   title: string;
-  category: "Technology" | "Education" | "Sports";
+  category: "Technology" | "Education" | "Sports" | "National" | "Business";
   summary: string;
+  content: string;
+  imageUrl: string;
   time: string;
+  views: number;
   likes: number;
   comments: CommentItem[];
 }
@@ -26,47 +29,38 @@ const INITIAL_NEWS: NewsItem[] = [
     id: 1,
     title: "Kathmandu Tech Ecosystem Sees Record Growth in 2026",
     category: "Technology",
-    summary:
-      "Local software companies and startups in Kupondole and Pulchowk expand hiring for full-stack developers.",
+    summary: "Local software companies and startups in Kupondole and Pulchowk expand hiring for full-stack developers.",
+    content: "The tech corridor across Kupondole, Pulchowk, and Thapathali has recorded a 40% surge in junior software developer placements this year. Tech leaders attribute this to a booming outsourcing market and government digital transformation initiatives.",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
     time: "10 mins ago",
-    likes: 14,
+    views: 342,
+    likes: 45,
     comments: [
-      {
-        id: 101,
-        author: "Ramesh K.",
-        text: "Great news for freshers learning Next.js and TypeScript!",
-        time: "5 mins ago",
-      },
+      { id: 101, author: "Aayush Shrestha", text: "Exciting times for freshers building Next.js apps!", time: "5 mins ago" }
     ],
   },
   {
     id: 2,
     title: "Nepal Engineering Council Updates Licensing Guidelines",
     category: "Education",
-    summary:
-      "New syllabus and modern engineering domains prioritized for the upcoming technical licensing exams.",
+    summary: "New syllabus and modern engineering domains prioritized for the upcoming technical licensing exams.",
+    content: "The Nepal Engineering Council has released updated directives emphasizing practical software architecture, cloud deployment, and cybersecurity standards for upcoming Computer Engineering license candidates.",
+    imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80",
     time: "1 hour ago",
-    likes: 9,
+    views: 512,
+    likes: 88,
     comments: [],
   },
   {
     id: 3,
     title: "Nagarjun-Shivapuri Trail Marathon Announced",
     category: "Sports",
-    summary:
-      "Over five hundred domestic and international runners register for the grueling high-altitude trail race.",
+    summary: "Over five hundred domestic and international runners register for the grueling high-altitude trail race.",
+    content: "Registration numbers have shattered previous records for the annual Kathmandu valley ridge marathon, promoting sports tourism and endurance fitness across the hills.",
+    imageUrl: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=800&q=80",
     time: "3 hours ago",
-    likes: 6,
-    comments: [],
-  },
-  {
-    id: 4,
-    title: "New Cloud & AI Hub Launched in Patan",
-    category: "Technology",
-    summary:
-      "Incubator provides free server credits and mentorship for junior engineers building production apps.",
-    time: "4 hours ago",
-    likes: 21,
+    views: 230,
+    likes: 31,
     comments: [],
   },
 ];
@@ -75,9 +69,11 @@ async function readDatabase(): Promise<NewsItem[]> {
   try {
     const fileData = await fs.readFile(DB_FILE_PATH, "utf-8");
     const parsed = JSON.parse(fileData);
-    // Ensure older articles in news-db.json automatically get likes & comments fields
     return parsed.map((item: NewsItem) => ({
       ...item,
+      content: item.content || item.summary,
+      imageUrl: item.imageUrl || "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=800&q=80",
+      views: item.views ?? Math.floor(Math.random() * 200) + 50,
       likes: item.likes ?? 0,
       comments: item.comments ?? [],
     }));
@@ -87,13 +83,11 @@ async function readDatabase(): Promise<NewsItem[]> {
   }
 }
 
-// 1. GET: Read all articles
 export async function GET() {
   const articles = await readDatabase();
   return NextResponse.json(articles);
 }
 
-// 2. POST: Create a new article
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -102,12 +96,12 @@ export async function POST(request: Request) {
     const newArticle: NewsItem = {
       id: Date.now(),
       title: body.title,
-      category: body.category,
+      category: body.category || "Technology",
       summary: body.summary,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      content: body.content || body.summary,
+      imageUrl: body.imageUrl || "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=800&q=80",
+      time: "Just now",
+      views: 1,
       likes: 0,
       comments: [],
     };
@@ -117,51 +111,42 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newArticle, { status: 201 });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to publish article" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Failed to publish" }, { status: 400 });
   }
 }
 
-// 3. PUT: Update an article (Edit text, Like, or Add Comment)
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
     const articles = await readDatabase();
-
     let updatedItem: NewsItem | null = null;
 
     const updatedArticles = articles.map((item) => {
       if (item.id !== body.id) return item;
 
-      // Action A: Increment Likes
       if (body.action === "like") {
         updatedItem = { ...item, likes: (item.likes || 0) + 1 };
         return updatedItem;
       }
 
-      // Action B: Add a Comment
       if (body.action === "comment") {
-        const newComment: CommentItem = {
+        const newComment = {
           id: Date.now(),
           author: body.author || "Reader",
           text: body.text,
           time: "Just now",
         };
-        updatedItem = {
-          ...item,
-          comments: [...(item.comments || []), newComment],
-        };
+        updatedItem = { ...item, comments: [...(item.comments || []), newComment] };
         return updatedItem;
       }
 
-      // Action C: Edit Article Title / Category / Summary
       updatedItem = {
         ...item,
         title: body.title ?? item.title,
         category: body.category ?? item.category,
         summary: body.summary ?? item.summary,
+        content: body.content ?? item.content,
+        imageUrl: body.imageUrl ?? item.imageUrl,
       };
       return updatedItem;
     });
@@ -169,28 +154,20 @@ export async function PUT(request: Request) {
     await fs.writeFile(DB_FILE_PATH, JSON.stringify(updatedArticles, null, 2));
     return NextResponse.json(updatedItem);
   } catch {
-    return NextResponse.json(
-      { error: "Failed to update article" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Failed to update" }, { status: 400 });
   }
 }
 
-// 4. DELETE: Remove an article
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = Number(searchParams.get("id"));
-
     const articles = await readDatabase();
     const updatedArticles = articles.filter((item) => item.id !== id);
 
     await fs.writeFile(DB_FILE_PATH, JSON.stringify(updatedArticles, null, 2));
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to delete article" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Failed to delete" }, { status: 400 });
   }
 }
