@@ -1,5 +1,25 @@
 [
   {
+    "id": 1793784907922,
+    "title": "AI Report: Artificial Intelligence Growth and Impact Across Kathmandu Valley",
+    "category": "Technology",
+    "summary": "Recent industry analyses highlight significant milestones regarding Artificial Intelligence. Stakeholders, local developers, and institutional leaders in Kathmandu report positive shifts, paving the way for enhanced infrastructure, digital transformation, and sustainable expansion throughout Nepal.",
+    "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=85",
+    "author": "Hamro AI Reporter",
+    "isBreaking": true,
+    "time": "Just now",
+    "likes": 1,
+    "views": 5,
+    "comments": [
+      {
+        "id": 1793784907923,
+        "author": "System Bot",
+        "text": "Automatically synthesized via AI analysis on \"Artificial Intelligence\".",
+        "time": "Just now"
+      }
+    ]
+  },
+  {
     "id": 1,
     "title": "Kathmandu Tech Ecosystem Sees Record Growth in 2026",
     "category": "Technology",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface CommentItem {
   id: number;
@@ -62,8 +63,10 @@ export default function Home() {
         setIsLoading(false);
       }
     }
-    const stored = localStorage.getItem("hamro_khabar_saved");
-    if (stored) setSavedIds(JSON.parse(stored));
+    queueMicrotask(() => {
+      const stored = localStorage.getItem("hamro_khabar_saved");
+      if (stored) setSavedIds(JSON.parse(stored));
+    });
     loadNews();
   }, []);
 
@@ -228,7 +231,7 @@ export default function Home() {
       </header>
 
       {/* Main Container Wrapper (Switches to Mobile Phone Frame if Mobile View is active) */}
-      <div className={`mx-auto transition-all duration-300 ${viewMode === "mobile" ? "max-w-sm my-8 border-[10px] border-neutral-800 rounded-[40px] overflow-hidden bg-neutral-950 shadow-2xl ring-8 ring-neutral-900" : "max-w-6xl px-6"}`}>
+      <div className={`mx-auto transition-all duration-300 ${viewMode === "mobile" ? "max-w-sm my-8 border-10 border-neutral-800 rounded-[40px] overflow-hidden bg-neutral-950 shadow-2xl ring-8 ring-neutral-900" : "max-w-6xl px-6"}`}>
         
         {/* Mobile Notch Bar if mobile view */}
         {viewMode === "mobile" && (
@@ -239,8 +242,8 @@ export default function Home() {
 
         {/* Hero Banner */}
         <section className="pt-6 pb-2 px-4 md:px-0">
-          <div className="bg-gradient-to-r from-red-950/50 to-neutral-900 border border-red-900/40 rounded-xl p-5">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-red-400">Nepal's Unified News Engine</span>
+          <div className="bg-linear-to-r from-red-950/50 to-neutral-900 border border-red-900/40 rounded-xl p-5">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-red-400">Nepal&apos;s Unified News Engine</span>
             <h2 className="text-lg md:text-xl font-bold mt-1 text-white">
               Real-time Kathmandu & National Feed
             </h2>
@@ -298,10 +301,13 @@ export default function Home() {
                     onClick={() => setActiveArticle(item)}
                     className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col sm:flex-row hover:border-neutral-700 transition cursor-pointer group"
                   >
-                    <div className="sm:w-36 h-32 sm:h-auto bg-neutral-950 relative overflow-hidden flex-shrink-0">
-                      <img
+                    <div className="sm:w-36 h-32 sm:h-auto bg-neutral-950 relative overflow-hidden shrink-0">
+                      <Image
                         src={item.imageUrl}
                         alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 144px"
+                        unoptimized
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                       />
                       <span className="absolute top-2 left-2 bg-black/70 backdrop-blur text-[10px] text-red-400 font-semibold px-2 py-0.5 rounded">
@@ -377,8 +383,15 @@ export default function Home() {
               {activeArticle.title}
             </h2>
 
-            <div className="w-full h-56 rounded-xl overflow-hidden mb-4 bg-neutral-950">
-              <img src={activeArticle.imageUrl} alt={activeArticle.title} className="w-full h-full object-cover" />
+            <div className="relative w-full h-56 rounded-xl overflow-hidden mb-4 bg-neutral-950">
+              <Image
+                src={activeArticle.imageUrl}
+                alt={activeArticle.title}
+                fill
+                unoptimized
+                sizes="(max-width: 640px) 100vw, 576px"
+                className="object-cover"
+              />
             </div>
 
             <p className="text-neutral-300 text-xs md:text-sm leading-relaxed mb-6 whitespace-pre-line">
@@ -473,7 +486,7 @@ export default function Home() {
                 <label className="block text-neutral-400 mb-1">Category</label>
                 <select
                   value={formCategory}
-                  onChange={(e) => setFormCategory(e.target.value as any)}
+                  onChange={(e) => setFormCategory(e.target.value as Article["category"])}
                   className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-red-500"
                 >
                   <option value="Technology">Technology</option>
