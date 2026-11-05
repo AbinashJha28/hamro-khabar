@@ -3,6 +3,13 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
+interface CommentItem {
+  id: number;
+  author: string;
+  text: string;
+  time: string;
+}
+
 interface NewsItem {
   id: number;
   title: string;
@@ -14,12 +21,7 @@ interface NewsItem {
   time: string;
   likes: number;
   views: number;
-  comments: {
-    id: number;
-    author: string;
-    text: string;
-    time: string;
-  }[];
+  comments: CommentItem[];
 }
 
 const DB_FILE_PATH =
@@ -29,14 +31,14 @@ const DB_FILE_PATH =
 
 export async function POST(request: Request) {
   try {
-    const { topic, category = "Technology" } = await request.json();
+    const body = await request.json();
+    const topic = body.topic;
+    const category = body.category || "Technology";
 
     if (!topic) {
       return NextResponse.json({ error: "Topic is required" }, { status: 400 });
     }
 
-    // Simulated high-fidelity AI generation tailored for Nepal & Kathmandu
-    // (You can replace this block with an official Google Gemini SDK fetch call using process.env.GEMINI_API_KEY)
     const generatedTitle = `AI Report: ${topic} Growth and Impact Across Kathmandu Valley`;
     const generatedSummary = `Recent industry analyses highlight significant milestones regarding ${topic}. Stakeholders, local developers, and institutional leaders in Kathmandu report positive shifts, paving the way for enhanced infrastructure, digital transformation, and sustainable expansion throughout Nepal.`;
     
@@ -68,7 +70,6 @@ export async function POST(request: Request) {
       ],
     };
 
-    // Read existing database and prepend AI article
     let articles: NewsItem[] = [];
     try {
       const fileData = await fs.readFile(DB_FILE_PATH, "utf-8");

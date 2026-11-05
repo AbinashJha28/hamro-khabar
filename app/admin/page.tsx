@@ -2,7 +2,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+
+interface CommentItem {
+  id: number;
+  author: string;
+  text: string;
+  time: string;
+}
 
 interface Article {
   id: number;
@@ -15,25 +21,22 @@ interface Article {
   time: string;
   likes: number;
   views: number;
-  comments: unknown[];
+  comments: CommentItem[];
 }
 
 export default function AdminDashboard() {
-  // Authentication State (Default password set to "admin123" - change as desired)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState<string>("");
   const [loginError, setLoginError] = useState<boolean>(false);
 
-  // Dashboard Data State
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // AI Prompt State
   const [aiTopic, setAiTopic] = useState<string>("");
   const [aiCategory, setAiCategory] = useState<"Technology" | "Education" | "Business" | "Politics" | "Sports">("Technology");
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
-  const ADMIN_SECRET = "admin123"; // You can modify your admin password here
+  const ADMIN_SECRET = "admin123";
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -102,7 +105,6 @@ export default function AdminDashboard() {
     }
   }
 
-  // If not logged in, show Password Lock screen
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen bg-neutral-950 text-white flex items-center justify-center p-4">
@@ -144,23 +146,21 @@ export default function AdminDashboard() {
           </button>
 
           <div className="mt-6 text-center">
-            <Link href="/" className="text-xs text-neutral-500 hover:text-neutral-300">
+            <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">
               ← Return to Public Website
-            </Link>
+            </a>
           </div>
         </form>
       </main>
     );
   }
 
-  // Total Analytics Computations
   const totalArticles = articles.length;
   const totalLikes = articles.reduce((acc, curr) => acc + (curr.likes || 0), 0);
   const totalViews = articles.reduce((acc, curr) => acc + (curr.views || 0), 0);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-16">
-      {/* Header */}
       <header className="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -172,13 +172,13 @@ export default function AdminDashboard() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link
+            <a
               href="/"
               target="_blank"
               className="text-xs text-neutral-400 hover:text-white"
             >
               View Live Site ↗
-            </Link>
+            </a>
             <button
               onClick={() => setIsAuthenticated(false)}
               className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold px-3 py-1.5 rounded-lg"
@@ -190,7 +190,6 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto px-6 pt-8 space-y-8">
-        {/* Analytics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
             <span className="text-xs text-neutral-400 uppercase tracking-wider">
@@ -218,8 +217,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* AI Content Generator Box */}
-        <div className="bg-linear-to-r from-red-950/30 to-neutral-900 border border-red-900/40 rounded-2xl p-6">
+        <div className="bg-gradient-to-r from-red-950/30 to-neutral-900 border border-red-900/40 rounded-2xl p-6">
           <span className="text-xs font-semibold uppercase tracking-wider text-red-400">
             🤖 Automated AI News Generator
           </span>
@@ -230,14 +228,14 @@ export default function AdminDashboard() {
             <input
               type="text"
               required
-              placeholder="Enter topic (e.g. Kathmandu Valley Electric Bus Expansion, AI in Nepal)..."
+              placeholder="Enter topic (e.g. Kathmandu Valley Electric Bus Expansion)..."
               value={aiTopic}
               onChange={(e) => setAiTopic(e.target.value)}
               className="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500"
             />
             <select
               value={aiCategory}
-              onChange={(e: unknown) => setAiCategory(e.target.value)}
+              onChange={(e: any) => setAiCategory(e.target.value)}
               className="bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500"
             >
               <option value="Technology">Technology</option>
@@ -256,7 +254,6 @@ export default function AdminDashboard() {
           </form>
         </div>
 
-        {/* Article Management Table */}
         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
           <div className="p-5 border-b border-neutral-800 flex justify-between items-center">
             <h3 className="font-bold text-white">All Published Articles ({articles.length})</h3>
