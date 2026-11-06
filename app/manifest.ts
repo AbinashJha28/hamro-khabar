@@ -12,9 +12,10 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "portrait",
     icons: [
       {
-        src: "/icon",
+        src: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=512&h=512&q=80",
         sizes: "512x512",
         type: "image/png",
+        purpose: "any maskable"
       },
     ],
   };
