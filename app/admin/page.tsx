@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface CommentItem {
   id: number;
@@ -146,9 +147,9 @@ export default function AdminDashboard() {
           </button>
 
           <div className="mt-6 text-center">
-            <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">
+            <Link href="/" className="text-xs text-neutral-500 hover:text-neutral-300">
               ← Return to Public Website
-            </a>
+            </Link>
           </div>
         </form>
       </main>
@@ -172,13 +173,13 @@ export default function AdminDashboard() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/"
               target="_blank"
               className="text-xs text-neutral-400 hover:text-white"
             >
               View Live Site ↗
-            </a>
+            </Link>
             <button
               onClick={() => setIsAuthenticated(false)}
               className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold px-3 py-1.5 rounded-lg"
