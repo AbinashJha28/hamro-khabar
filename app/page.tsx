@@ -195,9 +195,10 @@ export default function Home() {
       <header className="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur sticky top-0 z-40 px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">LIVE</span>
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-white">
-            हाम्रो <span className="text-red-500">Khabar</span>
-          </h1>
+          <div className="flex items-center gap-2">
+  <Image src="/logo.png" alt="Hamro Khabar Logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover" />
+  <span className="font-black text-xl text-white">Hamro Khabar</span>
+</div>
         </div>
 
         <div className="flex items-center gap-3">
